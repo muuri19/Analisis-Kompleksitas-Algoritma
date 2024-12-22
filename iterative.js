@@ -23,9 +23,26 @@ function findMedianSortedArrays(nums1, nums2) {
     }
 }
 
+function measureRunningTime(nums1, nums2) {  
+    const startTime = performance.now();  
+    const median = findMedianSortedArrays(nums1, nums2);  
+    const endTime = performance.now();  
+    const duration = endTime - startTime;  
 
-const nums1 = [1, 3];
-const nums2 = [2, 4, 5];
+    console.log("Median:", median);  
+    console.log(`Running time: ${duration.toFixed(2)} milliseconds`);  
+}  
+ 
+function generateSortedArray(size) {  
+    const array = Array.from({ length: size }, () => Math.floor(Math.random() * 1000));  
+    return array.sort((a, b) => a - b); // Sort the array  
+}  
 
-const median = findMedianSortedArrays(nums1, nums2);
-console.log("Median:", median);
+const sizes = [100, 500, 1000];  
+
+sizes.forEach(size => {  
+    const nums1 = generateSortedArray(size);  
+    const nums2 = generateSortedArray(size);  
+    console.log(`Testing with input size: ${size}`);  
+    measureRunningTime(nums1, nums2);  
+});  
