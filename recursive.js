@@ -39,16 +39,17 @@ function measureRunningTime(nums1, nums2) {
     console.log(`Running time: ${duration.toFixed(2)} milliseconds`);  
 }  
  
-function generateSortedArray(size) {  
-    const array = Array.from({ length: size }, () => Math.floor(Math.random() * 1000));  
-    return array.sort((a, b) => a - b); // Sort the array  
-}  
+function generateOddArray(size) {
+    // Generate an array of odd numbers starting from 1
+    return Array.from({ length: size }, (_, i) => 1 + i * 2);
+}
 
-const sizes = [100, 500, 2500];  
+// Sizes of arrays to test
+const sizes = [50, 250, 500, 750];
 
-sizes.forEach(size => {  
-    const nums1 = generateSortedArray(size);  
-    const nums2 = generateSortedArray(size);  
-    console.log(`Testing with input size: ${size}`);  
-    measureRunningTime(nums1, nums2);  
-});  
+sizes.forEach(size => {
+    const nums1 = generateOddArray(size); // e.g., [1, 3, 5, ..., size * 2 - 1]
+    const nums2 = generateOddArray(size); // e.g., [1, 3, 5, ..., size * 2 - 1]
+    console.log(`Testing with input size: ${size}`);
+    measureRunningTime(nums1, nums2);
+});
