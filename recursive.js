@@ -45,11 +45,14 @@ function generateOddArray(size) {
 }
 
 // Sizes of arrays to test
-const sizes = [50, 250, 500, 750];
+const sizes = [50];
 
-sizes.forEach(size => {
-    const nums1 = generateOddArray(size); // e.g., [1, 3, 5, ..., size * 2 - 1]
-    const nums2 = generateOddArray(size); // e.g., [1, 3, 5, ..., size * 2 - 1]
-    console.log(`Testing with input size: ${size}`);
+sizes.forEach(totalSize => {
+    const halfSize = Math.floor(totalSize / 2); // Split total size into two halves
+    const nums1 = generateOddArray(halfSize); // First half array
+    const nums2 = generateOddArray(totalSize - halfSize); // Second half array
+    console.log(nums1);
+    console.log(nums2);
+    console.log(`Testing with total input size: ${totalSize}`);
     measureRunningTime(nums1, nums2);
 });
