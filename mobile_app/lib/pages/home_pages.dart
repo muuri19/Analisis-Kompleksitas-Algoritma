@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_app/algorithm/iterative_median.dart';
-import 'package:mobile_app/config/constans.dart';
+import 'package:mobile_app/algorithm/recursive_median.dart';
 import 'package:mobile_app/widgets/button_calculate.dart';
-import 'package:mobile_app/widgets/card_output.dart';
-import 'package:mobile_app/widgets/custom_textfield.dart';
 
 class HomePages extends StatefulWidget {
   static const routeName = 'home';
@@ -14,45 +12,12 @@ class HomePages extends StatefulWidget {
 }
 
 class _HomePagesState extends State<HomePages> {
-  final TextEditingController array1Controller = TextEditingController();
-  final TextEditingController array2Controller = TextEditingController();
-
-  double? iteratifMedian;
-  double? recursiveMedian;
-  Duration? iteratifTime;
-  Duration? recursiveTime;
-
-  void calculateMedian() {
-    final List<int> array1 = array1Controller.text
-        .split(',')
-        .map((e) => int.tryParse(e.trim()) ?? 0)
-        .toList();
-    final List<int> array2 = array1Controller.text
-        .split(',')
-        .map((e) => int.tryParse(e.trim()) ?? 0)
-        .toList();
-
-    final List<int> combinedArray = [...array1, ...array2]..sort();
-
-    //Calculate Iterative Method
-    final stopwatch1 = Stopwatch()..start();
-    iteratifMedian = findMedianIterative(combinedArray);
-    stopwatch1.stop();
-    iteratifTime = stopwatch1.elapsed;
-
-    //Calculate Iterative Method
-    final stopwatch2 = Stopwatch()..start();
-    iteratifMedian = findMedianIterative(combinedArray);
-    stopwatch2.stop();
-    iteratifTime = stopwatch2.elapsed;
-
-    Constants.logger.i(
-        "Median Iterative : $iteratifMedian\nMedian Recursive : $recursiveMedian");
-    Constants.logger.i(
-        "Running Time Iterative: $iteratifTime\nRunning Time Recursive : $recursiveTime");
-
-    setState(() {});
-  }
+  final TextEditingController _array1Controller = TextEditingController();
+  final TextEditingController _array2Controller = TextEditingController();
+  String? _medianIterative;
+  String? _medianRecursive;
+  String? _analysisIterative;
+  String? _analysisRecursive;
 
   @override
   Widget build(BuildContext context) {
@@ -66,37 +31,159 @@ class _HomePagesState extends State<HomePages> {
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
           child: Column(
             children: [
-              CustomTextfield(
-                labelText: "Array 1",
-                controller: array1Controller,
-              ),
+              SizedBox(
+                  width: MediaQuery.of(context).size.width,
+                  child: TextField(
+                    controller: _array1Controller,
+                    keyboardType: TextInputType.text,
+                    decoration: const InputDecoration(
+                      hintText: "Input Array 1",
+                      border: OutlineInputBorder(),
+                    ),
+                  )),
               const SizedBox(
-                height: 15,
+                height: 8,
               ),
-              CustomTextfield(
-                labelText: "Array 2",
-                controller: array2Controller,
-              ),
+              SizedBox(
+                  width: MediaQuery.of(context).size.width,
+                  child: TextField(
+                    controller: _array2Controller,
+                    keyboardType: TextInputType.text,
+                    decoration: const InputDecoration(
+                      hintText: "Input Array 2",
+                      border: OutlineInputBorder(),
+                    ),
+                  )),
               const SizedBox(
                 height: 15,
               ),
               ButtonCalculate(
-                onPressed: calculateMedian,
+                onPressed: _calculateMedian,
               ),
               const SizedBox(
                 height: 15,
               ),
-              if (iteratifMedian != null && recursiveMedian != null) ...[
-                CardOutput(
-                    iteratifMedian: iteratifMedian.toString(),
-                    recursiveMedian: recursiveMedian.toString(),
-                    iteratifTime: iteratifTime.toString(),
-                    recursiveTime: toString())
-              ]
+              if (_medianIterative != null) ...[
+                Container(
+                  width: MediaQuery.of(context).size.width,
+                  decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(4),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.blue.withOpacity(0.5),
+                          blurRadius: 4,
+                          offset: const Offset(2, 4),
+                        )
+                      ]),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 10, vertical: 20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Text("Median with Rekursif"),
+                            Text("$_medianRecursive"),
+                          ],
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Text("Running Time"),
+                            Text("$_analysisRecursive"),
+                          ],
+                        ),
+                        const SizedBox(
+                          height: 8,
+                        ),
+                        const Divider(
+                          height: 1,
+                        ),
+                        const SizedBox(
+                          height: 8,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Text("Median with Iterative"),
+                            Text("$_medianIterative"),
+                          ],
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Text("Running Time"),
+                            Text("$_analysisIterative"),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                )
+              ],
             ],
           ),
         ),
       ),
     );
+  }
+
+  void _showError(String message) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Error'),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _calculateMedian() {
+    final List<int> array1 = _parseInput(_array1Controller.text);
+    final List<int> array2 = _parseInput(_array2Controller.text);
+
+    if (array1.isEmpty || array2.isEmpty) {
+      _showError('Both arrays must contain valid numbers.');
+      return;
+    }
+
+    final Stopwatch stopwatch = Stopwatch();
+
+    stopwatch.start();
+    final iterativeMedian = findMedianIterative(array1, array2);
+    stopwatch.stop();
+    final iterativeTime = stopwatch.elapsedMicroseconds;
+
+    stopwatch.reset();
+
+    stopwatch.start();
+    final recursiveMedian = findMedianRecursive(array1, array2);
+    stopwatch.stop();
+    final recursiveTime = stopwatch.elapsedMicroseconds;
+
+    setState(() {
+      _medianIterative = iterativeMedian.toString();
+      _medianRecursive = recursiveMedian.toString();
+      _analysisIterative = '$iterativeTime Microseconds';
+      _analysisRecursive = '$recursiveTime Microseconds';
+    });
+  }
+
+  List<int> _parseInput(String input) {
+    return input
+        .split(',')
+        .map((e) => int.tryParse(e.trim()))
+        .where((e) => e != null)
+        .cast<int>()
+        .toList();
   }
 }

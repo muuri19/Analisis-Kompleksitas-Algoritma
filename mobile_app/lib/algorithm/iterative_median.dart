@@ -1,11 +1,7 @@
-  //Jika jumlah elemen ganjil, maka median adalah elemen di tengah
-  //Jika jumlah elemen genap, maka median adalah rata-rata dua elemen ditengah
-double findMedianIterative(List<int> nums) {
-  int n = nums.length;
-  if(n % 2 == 1){
-    return nums[n ~/ 2].toDouble();
-  }else {
-    return (nums[n ~/2 - 1] + nums[n ~/2]) / 2;
-  }
+double findMedianIterative(List<int> array1, List<int> array2) {
+  final List<int> merged = [...array1, ...array2]..sort();
+  final int n = merged.length;
+  return n % 2 == 0
+      ? (merged[n ~/ 2 - 1] + merged[n ~/ 2]) / 2
+      : merged[n ~/ 2].toDouble();
 }
-
