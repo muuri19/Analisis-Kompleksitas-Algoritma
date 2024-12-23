@@ -45,7 +45,7 @@ function generateOddArray(size) {
 }
 
 // Sizes of arrays to test
-const sizes = [50, 250, 500];
+const sizes = [50, 250, 500, 750, 1000, 1500, 2500, 3500];
 
 sizes.forEach(totalSize => {
     const halfSize = Math.floor(totalSize / 2); // Split total size into two halves
