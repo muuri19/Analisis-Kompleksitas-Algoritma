@@ -5,7 +5,7 @@ function findMedianSortedArrays(nums1, nums2) {
     for (let i = 1; i < n; i++) {
         let current = combinedArray[i];
         let j = i - 1;
-
+        
         while (j >= 0 && combinedArray[j] > current) {
             combinedArray[j + 1] = combinedArray[j];
             j--;
