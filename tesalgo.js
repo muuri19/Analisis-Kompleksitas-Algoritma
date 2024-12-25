@@ -1,18 +1,21 @@
-const { performance } = require('perf_hooks'); // Gunakan untuk mengukur waktu eksekusi di Node.js
+const { performance } = require('perf_hooks');
 
-// Fungsi untuk mengukur waktu eksekusi sebuah fungsi
+// Fungsi untuk mengukur waktu eksekusi algoritma.
+// Penjelasan: Fungsi ini memulai pengukuran waktu sebelum algoritma dijalankan dan menghitung selisihnya setelah selesai.
+// Argumen: func - fungsi algoritma, args - parameter yang akan diteruskan ke fungsi.
 function measureExecutionTime(func, ...args) {
-    const start = performance.now(); // Catat waktu mulai
-    const result = func(...args); // Jalankan fungsi
-    const end = performance.now(); // Catat waktu selesai
-    return { result, time: end - start }; // Kembalikan hasil dan waktu eksekusi
+    const start = performance.now(); // Mulai pengukuran waktu.
+    const result = func(...args);    // Jalankan fungsi dengan argumen.
+    const end = performance.now();  // Catat waktu setelah selesai.
+    return { result, time: end - start }; // Kembalikan hasil fungsi dan waktu eksekusi.
 }
 
-// Fungsi iteratif untuk mencari median dari dua array
+// Fungsi untuk mencari median secara iteratif.
 function findMedianIterative(arr1, arr2) {
-    let combinedArray = arr1.concat(arr2);
+    let combinedArray = arr1.concat(arr2); // Gabungkan kedua array.
 
-    let n = combinedArray.length;
+    let n = combinedArray.length; // Panjang array gabungan.
+    // Proses pengurutan menggunakan Insertion Sort.
     for (let i = 1; i < n; i++) {
         let current = combinedArray[i];
         let j = i - 1;
@@ -21,133 +24,78 @@ function findMedianIterative(arr1, arr2) {
             combinedArray[j + 1] = combinedArray[j];
             j--;
         }
-        combinedArray[j + 1] = current;
+        combinedArray[j + 1] = current; // Masukkan elemen di tempat yang sesuai.
     }
 
-
+    // Cari median berdasarkan jumlah elemen.
     if (n % 2 === 1) {
-        return combinedArray[Math.floor(n / 2)];
+        return combinedArray[Math.floor(n / 2)]; // Median untuk jumlah elemen ganjil.
     } else {
         const mid1 = combinedArray[n / 2 - 1];
         const mid2 = combinedArray[n / 2];
-        return (mid1 + mid2) / 2;
+        return (mid1 + mid2) / 2; // Median untuk jumlah elemen genap.
     }
-    // // O(n + m): Gabungkan kedua array
-    // let mergedArray = arr1.concat(arr2);
-
-    // // O((n + m) log(n + m)): Urutkan array gabungan
-    // mergedArray.sort((a, b) => a - b);
-
-    // let n = mergedArray.length; // O(1): Hitung panjang array gabungan
-
-    // // O(1): Tentukan median berdasarkan panjang array
-    // return n % 2 === 1
-    //     ? mergedArray[Math.floor(n / 2)] // Akses elemen tengah jika jumlah elemen ganjil
-    //     : (mergedArray[n / 2 - 1] + mergedArray[n / 2]) / 2; // Rata-rata dua elemen tengah jika jumlah elemen genap
 }
 
-// Fungsi rekursif untuk mencari median dari dua array
+// Fungsi untuk mencari median secara rekursif.
 function findMedianRecursive(arr1, arr2) {
-    let combinedArray = arr1.concat(arr2);
+    let combinedArray = arr1.concat(arr2); // Gabungkan kedua array.
 
+    // Fungsi rekursif untuk melakukan Insertion Sort.
     function insertionSortRecursive(arr, n) {
-        
-        if (n <= 1) return;
-        insertionSortRecursive(arr, n - 1);
-
+        if (n <= 1) return; // Basis rekursi: jika hanya satu elemen, tidak perlu diurutkan.
+        insertionSortRecursive(arr, n - 1); // Rekursif ke elemen sebelumnya.
         let last = arr[n - 1];
         let j = n - 2;
-
         while (j >= 0 && arr[j] > last) {
             arr[j + 1] = arr[j];
             j--;
         }
-        arr[j + 1] = last;
+        arr[j + 1] = last; // Tempatkan elemen terakhir di posisi yang tepat.
     }
 
-    insertionSortRecursive(combinedArray, combinedArray.length);
+    insertionSortRecursive(combinedArray, combinedArray.length); // Panggil fungsi rekursif.
 
-    const length = combinedArray.length;
+    const length = combinedArray.length; // Panjang array gabungan.
     if (length % 2 === 1) {
-        
-        return combinedArray[Math.floor(length / 2)];
+        return combinedArray[Math.floor(length / 2)]; // Median untuk jumlah elemen ganjil.
     } else {
-        
         const mid1 = combinedArray[length / 2 - 1];
         const mid2 = combinedArray[length / 2];
-        return (mid1 + mid2) / 2;
+        return (mid1 + mid2) / 2; // Median untuk jumlah elemen genap.
     }
-    // Fungsi bantu untuk menghitung median dari satu array
-    // function medianSingleArray(arr) {
-    //     let n = arr.length; // O(1): Hitung panjang array
-    //     // O(1): Tentukan median array tunggal
-    //     return n % 2 === 1
-    //         ? arr[Math.floor(n / 2)] // Median untuk jumlah elemen ganjil
-    //         : (arr[n / 2 - 1] + arr[n / 2]) / 2; // Median untuk jumlah elemen genap
-    // }
-
-    // let n1 = arr1.length; // O(1)
-    // let n2 = arr2.length; // O(1)
-
-    // // O(1): Basis rekursi
-    // if (n1 === 1 && n2 === 1) return (arr1[0] + arr2[0]) / 2;
-    // if (n1 === 0) return medianSingleArray(arr2);
-    // if (n2 === 0) return medianSingleArray(arr1);
-
-    // // O(1): Hitung median masing-masing array
-    // let median1 = medianSingleArray(arr1);
-    // let median2 = medianSingleArray(arr2);
-
-    // // O(1): Jika median sama, kembalikan median
-    // if (median1 === median2) return median1;
-
-    // // Rekursi dengan array yang lebih kecil
-    // if (median1 < median2) {
-    //     // O(k): Potong array berdasarkan median
-    //     return findMedianRecursive(
-    //         arr1.slice(Math.floor(n1 / 2)), // Elemen kanan dari arr1
-    //         arr2.slice(0, Math.ceil(n2 / 2)) // Elemen kiri dari arr2
-    //     );
-    // } else {
-    //     // O(k): Potong array berdasarkan median
-    //     return findMedianRecursive(
-    //         arr1.slice(0, Math.ceil(n1 / 2)), // Elemen kiri dari arr1
-    //         arr2.slice(Math.floor(n2 / 2)) // Elemen kanan dari arr2
-    //     );
-    // }
 }
 
-// Ukuran array yang diuji
-const sizes = [10, 100,200, 500, 1000, 2000, 2500, 3500]; // Variasi input untuk mengukur performa
-const results = [];
+// Membandingkan efisiensi waktu antara algoritma iteratif dan rekursif.
+const sizes = [10, 100, 200, 500, 1000, 2000, 2500, 3500]; // Ukuran array untuk uji coba.
+const results = []; // Menyimpan hasil perbandingan.
 
 for (let size of sizes) {
-    // O(n): Membuat array random
+    // Buat array acak untuk pengujian.
     const array1 = Array.from({ length: size }, () => Math.floor(Math.random() * 1000));
     const array2 = Array.from({ length: size }, () => Math.floor(Math.random() * 1000));
 
-    // O(n log n): Mengurutkan array untuk fungsi rekursif
+    // Urutkan array untuk pengujian rekursif.
     const sortedArray1 = [...array1].sort((a, b) => a - b);
     const sortedArray2 = [...array2].sort((a, b) => a - b);
 
-    // Ukur waktu eksekusi fungsi iteratif dan rekursif
+    // Ukur waktu eksekusi algoritma.
     const iterative = measureExecutionTime(findMedianIterative, array1, array2);
     const recursive = measureExecutionTime(findMedianRecursive, sortedArray1, sortedArray2);
 
-    // Simpan hasil pengukuran
+    // Simpan hasil pengujian.
     results.push({
         size,
-        iterativeTime: iterative.time.toFixed(2), // Waktu fungsi iteratif
-        recursiveTime: recursive.time.toFixed(2), // Waktu fungsi rekursif
-        iterativeMedian: iterative.result, // Median hasil iteratif
-        recursiveMedian: recursive.result, // Median hasil rekursif
+        iterativeTime: iterative.time.toFixed(2),
+        recursiveTime: recursive.time.toFixed(2),
+        iterativeMedian: iterative.result,
+        recursiveMedian: recursive.result,
     });
 }
 
-// Tampilkan hasil dalam tabel
-console.table(results);
+console.table(results); // Tampilkan hasil pengujian dalam tabel.
 
-// Input manual untuk pengujian
+// Fungsi untuk melakukan uji coba manual oleh user.
 function manualTest() {
     const readline = require('readline');
     const rl = readline.createInterface({
@@ -161,16 +109,13 @@ function manualTest() {
         rl.question("Masukkan array kedua (pisahkan dengan koma): ", (input2) => {
             const array2 = input2.split(",").map(Number);
 
-            // Median iteratif
+            // Hitung median menggunakan metode iteratif dan rekursif.
             const iterativeMedian = findMedianIterative(array1, array2);
-
-            // Median rekursif
             const recursiveMedian = findMedianRecursive(
                 array1.sort((a, b) => a - b),
                 array2.sort((a, b) => a - b)
             );
 
-            // Hasil
             console.log("\nHasil Median:");
             console.log("Iteratif:", iterativeMedian);
             console.log("Rekursif:", recursiveMedian);
@@ -180,5 +125,4 @@ function manualTest() {
     });
 }
 
-// Jalankan manual test
-manualTest();
+manualTest(); // Panggil fungsi uji manual.
